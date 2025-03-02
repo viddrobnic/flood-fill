@@ -1,5 +1,6 @@
-use std::path::PathBuf;
+pub mod data;
+pub mod query;
 
-pub fn pre_process(input: PathBuf, output: PathBuf) {
-    println!("in: {:?}, out: {:?}", input, output);
-}
+mod point;
+
+pub use point::*;
