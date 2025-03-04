@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
-use flood_fill::{data, query};
+use flood_fill::{LatLon, data, query};
 
 #[derive(Debug, Parser)]
 #[command(version, about, long_about = None)]
@@ -41,6 +41,6 @@ fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     match cli.command {
         Command::Import { input, output } => data::import(input, output),
-        Command::Query { lat, lon, data } => query::query(lat, lon, data),
+        Command::Query { lat, lon, data } => query::query(LatLon::new(lat, lon), data),
     }
 }
