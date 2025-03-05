@@ -1,7 +1,6 @@
 use crate::{Area, Point, qtree::QTree};
 
-const MAX_DISTANCE: f32 = 100_000.0; // 100km
-
+const MAX_DISTANCE: f32 = 26_000.0; // 26km
 const JUMP_DISTANCE: f32 = 6.0; // 6m
 
 pub fn query(
@@ -10,43 +9,45 @@ pub fn query(
     depth: f32,
     verbose: bool,
 ) -> anyhow::Result<Vec<Point>> {
-    let mut points: Vec<_> = points
-        .iter()
-        .filter_map(|p| {
-            if p.distance_sq(home) <= MAX_DISTANCE * MAX_DISTANCE {
-                Some(p.clone())
-            } else {
-                None
-            }
-        })
-        .collect();
+    // Filter points by MAX_DISTANCE and get height of home.
+    let mut filtered_points = vec![];
+    let mut min_distance = f32::MAX;
+    let mut height = 0.0;
 
-    if verbose {
-        println!("[INFO] Filtered out points, left: {}", points.len());
+    for p in points {
+        let dist = p.distance_sq(home);
+        if dist > MAX_DISTANCE * MAX_DISTANCE {
+            continue;
+        }
+
+        filtered_points.push(p.clone());
+
+        if dist < min_distance {
+            min_distance = dist;
+            height = p.z;
+        }
     }
 
-    // Find closes point to get height
-    let (_, height) = points.iter().fold((f32::MAX, 0.0), |(min_d, h), p| {
-        let d = p.distance_sq(home);
-        if d < min_d { (d, p.z) } else { (min_d, h) }
-    });
     if verbose {
+        println!(
+            "[INFO] Filtered out points, left: {}",
+            filtered_points.len()
+        );
         println!("[INFO] Found nearest height: {}", height);
     }
 
-    // Filter points by height
-    points.retain(|p| p.z <= height + depth);
-    if verbose {
-        println!("[INFO] Filtered points by height, #left: {}", points.len());
-    }
-
-    // Construct a tree
-    let area = Area::from_points(&points);
+    // Construct the tree only with points that have correct height..
+    let area = Area::from_points(&filtered_points);
     let mut tree = QTree::new(area);
-    for p in points {
-        tree.insert(p)?;
+    let mut count = 0;
+    for p in filtered_points {
+        if p.z < height + depth {
+            tree.insert(p)?;
+            count += 1;
+        }
     }
     if verbose {
+        println!("[INFO] Filtered points by height, left: {count}");
         println!("[INFO] Constructed tree, #points: {}", tree.size());
     }
 

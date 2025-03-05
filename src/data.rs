@@ -100,7 +100,14 @@ fn import_rec<W: io::Write>(input: &PathBuf, writer: &mut PointWriter<W>) -> any
 }
 
 fn import_file<W: io::Write>(input: &PathBuf, writer: &mut PointWriter<W>) -> anyhow::Result<()> {
-    // TODO: Ignore non xyz files
+    // Ignore non .xyz files
+    let Some(ext) = input.extension() else {
+        return Ok(());
+    };
+
+    if ext.to_str() != Some("xyz") {
+        return Ok(());
+    }
 
     let file = fs::File::open(input)?;
     let mut reader = io::BufReader::new(file);

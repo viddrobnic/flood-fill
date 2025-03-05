@@ -131,7 +131,10 @@ impl Node {
 
     fn subdivide(&mut self) {
         let area = &self.area;
-        let r = area.radius / 2.0;
+        // Radius is created with a small epsilon to handle numerical error.
+        // This means that areas overlap a bit, but that's fine. We are using
+        // if/else for insertion, which means point is inserted only in one subsection.
+        let r = area.radius / 2.0 + 0.01;
 
         let nw_area = Area {
             center: Point {
@@ -178,7 +181,10 @@ impl Node {
             panic!("subdivide called on non-leaf node");
         };
         for p in points {
-            self.insert(p).expect("subdivide became invalid");
+            self.insert(p).unwrap_or_else(|err| {
+                println!("subdivide became invalid: {err}");
+                panic!()
+            });
         }
     }
 
