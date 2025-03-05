@@ -12,12 +12,7 @@ pub fn visualize(
     output_path: impl AsRef<Path>,
 ) -> anyhow::Result<()> {
     let area = Area::from_points(points);
-    let bounds = Bounds {
-        min_x: area.center.x - area.radius,
-        min_y: area.center.y - area.radius,
-        max_x: area.center.x + area.radius,
-        max_y: area.center.y + area.radius,
-    };
+    let bounds = Bounds::from(&area);
 
     let img_width = (bounds.width().ceil() as u32) / IMG_SCALE + 1;
     let img_height = (bounds.height().ceil() as u32) / IMG_SCALE + 1;

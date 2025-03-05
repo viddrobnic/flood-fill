@@ -4,7 +4,7 @@ use std::{
 };
 
 use clap::{Parser, Subcommand};
-use flood_fill::{LatLon, Point, data, query, visualize::visualize};
+use flood_fill::{Area, Bounds, LatLon, Point, data, query, visualize::visualize};
 
 #[derive(Debug, Parser)]
 #[command(version, about, long_about = None)]
@@ -82,5 +82,29 @@ fn simulate<P: AsRef<Path> + Debug>(
         println!();
     }
     println!("Image saved to: {:?}", output);
+
+    // Print corners
+    let area = Area::from_points(&points);
+    let bounds = Bounds::from(&area);
+
+    let c1 = Point {
+        x: bounds.min_x,
+        y: bounds.min_y,
+        z: 0.0,
+    };
+    let c1: LatLon = c1.try_into()?;
+
+    let c2 = Point {
+        x: bounds.max_x,
+        y: bounds.max_y,
+        z: 0.0,
+    };
+    let c2: LatLon = c2.try_into()?;
+
+    println!(
+        "Bounds (lat, lon): [{}, {}]\t[{}, {}]",
+        c1.lat, c1.lon, c2.lat, c2.lon
+    );
+
     Ok(())
 }

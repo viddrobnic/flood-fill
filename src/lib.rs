@@ -28,3 +28,14 @@ impl<T: Sub<Output = T> + Copy> Bounds<T> {
         self.max_y - self.min_y
     }
 }
+
+impl From<&Area> for Bounds<f32> {
+    fn from(area: &Area) -> Self {
+        Self {
+            min_x: area.center.x - area.radius,
+            min_y: area.center.y - area.radius,
+            max_x: area.center.x + area.radius,
+            max_y: area.center.y + area.radius,
+        }
+    }
+}
