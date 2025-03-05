@@ -1,8 +1,9 @@
-use std::path::Path;
+use std::{fs, io::Write, path::Path};
 
+use askama::Template;
 use image::{Rgba, RgbaImage};
 
-use crate::{Area, Bounds, Point};
+use crate::{Area, Bounds, LatLon, Point};
 
 const IMG_SCALE: u32 = 10;
 
@@ -37,6 +38,52 @@ pub fn visualize(
     }
 
     img.save(output_path)?;
+    Ok(())
+}
+
+#[derive(Template)]
+#[template(path = "visualize.html")]
+struct VisualizeMapTemplate {
+    home: LatLon,
+    nw: LatLon,
+    se: LatLon,
+}
+
+pub fn render_html(
+    home: &Point,
+    points: &[Point],
+    output_path: impl AsRef<Path>,
+) -> anyhow::Result<()> {
+    // Construct points
+    let area = Area::from_points(points);
+    let bounds = Bounds::from(&area);
+
+    let nw = Point {
+        x: bounds.min_x,
+        y: bounds.min_y,
+        z: 0.0,
+    };
+    let nw: LatLon = nw.try_into()?;
+
+    let se = Point {
+        x: bounds.max_x,
+        y: bounds.max_y,
+        z: 0.0,
+    };
+    let se: LatLon = se.try_into()?;
+
+    // Create template
+    let map_templ = VisualizeMapTemplate {
+        home: home.clone().try_into()?,
+        nw,
+        se,
+    };
+
+    let map_render = map_templ.render()?;
+
+    let mut file = fs::File::create(output_path)?;
+    file.write_all(map_render.as_bytes())?;
+
     Ok(())
 }
 

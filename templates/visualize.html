@@ -30,7 +30,8 @@
     ></script>
     <script>
       const map = L.map("map").setView(
-        [45.92569613389132, 14.364840138429289],
+        // Using parse float and strings because of formatter...
+        [parseFloat("{{home.lat}}"), parseFloat("{{home.lon}}")],
         16,
       );
 
@@ -41,8 +42,9 @@
       }).addTo(map);
 
       const imageBounds = [
-        [45.873074, 14.279038],
-        [46.087105, 14.581684],
+        // Using parse float and strings because of formatter...
+        [parseFloat("{{nw.lat}}"), parseFloat("{{nw.lon}}")],
+        [parseFloat("{{se.lat}}"), parseFloat("{{se.lon}}")],
       ];
       L.imageOverlay("flood.png", imageBounds).addTo(map);
     </script>
