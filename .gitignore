@@ -1,3 +1,6 @@
 /target
 /data
 /data.bin
+
+.DS_Store
+/flood.png
