@@ -40,6 +40,9 @@ enum Command {
         #[arg(long)]
         lon: f32,
 
+        #[arg(long, default_value_t = 1.0)]
+        depth: f32,
+
         /// Path to data file
         #[arg(long)]
         data: PathBuf,
@@ -56,22 +59,28 @@ fn main() -> anyhow::Result<()> {
         Command::Simulate {
             lat,
             lon,
+            depth,
             data,
             verbose,
         } => {
             let home: Point = LatLon::new(lat, lon).try_into()?;
-            simulate(home, data, verbose)
+            simulate(home, data, depth, verbose)
         }
     }
 }
 
-fn simulate<P: AsRef<Path> + Debug>(home: Point, data: P, verbose: bool) -> anyhow::Result<()> {
+fn simulate<P: AsRef<Path> + Debug>(
+    home: Point,
+    data: P,
+    depth: f32,
+    verbose: bool,
+) -> anyhow::Result<()> {
     let points = data::read(data)?;
     if verbose {
         println!("[INFO] Read data, #points: {}", points.len());
     }
 
-    let points = query::query(&home, &points, verbose)?;
+    let points = query::query(&home, &points, depth, verbose)?;
     visualize(&home, &points, IMAGE_OUTPUT)?;
 
     // Nicer formatting of success message

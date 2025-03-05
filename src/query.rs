@@ -3,9 +3,13 @@ use crate::{Area, Point, qtree::QTree};
 const MAX_DISTANCE: f32 = 100_000.0; // 100km
 
 const JUMP_DISTANCE: f32 = 6.0; // 6m
-const HEIGHT_DIST: f32 = 0.0; //1m
 
-pub fn query(home: &Point, points: &[Point], verbose: bool) -> anyhow::Result<Vec<Point>> {
+pub fn query(
+    home: &Point,
+    points: &[Point],
+    depth: f32,
+    verbose: bool,
+) -> anyhow::Result<Vec<Point>> {
     let mut points: Vec<_> = points
         .iter()
         .filter_map(|p| {
@@ -31,7 +35,7 @@ pub fn query(home: &Point, points: &[Point], verbose: bool) -> anyhow::Result<Ve
     }
 
     // Filter points by height
-    points.retain(|p| p.z <= height + HEIGHT_DIST);
+    points.retain(|p| p.z <= height + depth);
     if verbose {
         println!("[INFO] Filtered points by height, #left: {}", points.len());
     }
