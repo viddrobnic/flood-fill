@@ -4,7 +4,7 @@
 
 use anyhow::{anyhow, bail};
 
-use crate::Point;
+use crate::{Area, Point};
 
 // Max points in leaf node
 const MAX_POINTS: usize = 1000;
@@ -26,13 +26,6 @@ enum NodeInner {
 struct Node {
     area: Area,
     inner: NodeInner,
-}
-
-/// Square are with width = height = 2 * radius
-#[derive(Debug)]
-pub struct Area {
-    pub center: Point,
-    pub radius: f32,
 }
 
 pub struct QTree(Node);
@@ -195,101 +188,6 @@ impl Node {
             NodeInner::Intermediate { nw, ne, sw, se } => {
                 nw.size() + ne.size() + sw.size() + se.size()
             }
-        }
-    }
-}
-
-impl Area {
-    pub fn is_point_inside(&self, point: &Point) -> bool {
-        let x_inside =
-            point.x >= self.center.x - self.radius && point.x <= self.center.x + self.radius;
-        let y_inside =
-            point.y >= self.center.y - self.radius && point.y <= self.center.y + self.radius;
-
-        x_inside && y_inside
-    }
-
-    pub fn intersects(&self, other: &Self) -> bool {
-        let dx = (self.center.x - other.center.x).abs();
-        let dy = (self.center.y - other.center.y).abs();
-
-        let x_inter = dx <= self.radius + other.radius;
-        let y_inter = dy <= self.radius + other.radius;
-        x_inter && y_inter
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::Point;
-
-    use super::Area;
-
-    #[test]
-    fn area_intersects() {
-        let cases = [
-            (
-                Area {
-                    center: Point {
-                        x: 0.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    radius: 1.0,
-                },
-                Area {
-                    center: Point {
-                        x: 0.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    radius: 1.0,
-                },
-                true,
-            ),
-            (
-                Area {
-                    center: Point {
-                        x: 0.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    radius: 1.0,
-                },
-                Area {
-                    center: Point {
-                        x: 2.0,
-                        y: 2.0,
-                        z: 0.0,
-                    },
-                    radius: 1.0,
-                },
-                true,
-            ),
-            (
-                Area {
-                    center: Point {
-                        x: 0.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    radius: 1.0,
-                },
-                Area {
-                    center: Point {
-                        x: 2.0,
-                        y: 2.0,
-                        z: 0.0,
-                    },
-                    radius: 0.9,
-                },
-                false,
-            ),
-        ];
-
-        for (a1, a2, expected) in &cases {
-            assert_eq!(a1.intersects(a2), *expected);
-            assert_eq!(a2.intersects(a1), *expected);
         }
     }
 }

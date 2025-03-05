@@ -1,6 +1,7 @@
 use std::fs;
 use std::io;
 use std::io::BufRead;
+use std::path::Path;
 use std::path::PathBuf;
 
 use anyhow::{anyhow, bail};
@@ -62,7 +63,7 @@ impl<R: io::Read> PointReader<R> {
     }
 }
 
-pub fn read(data_path: PathBuf) -> anyhow::Result<Vec<Point>> {
+pub fn read(data_path: impl AsRef<Path>) -> anyhow::Result<Vec<Point>> {
     let file = fs::File::open(data_path)?;
     let reader = io::BufReader::new(file);
 
