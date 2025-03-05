@@ -42,3 +42,7 @@ the country has lower elevation that the user input.
 > You should use release mode, otherwise you will wait for a _very_ long time.
 
 See command help `cargo run -- simulate --help` to see what different options do.
+
+## License
+
+The project is licensed under the [MIT License](LICENSE).
