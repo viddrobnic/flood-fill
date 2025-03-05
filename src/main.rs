@@ -40,6 +40,7 @@ enum Command {
         #[arg(long)]
         lon: f32,
 
+        /// Depth of water at the given location, given in meters.
         #[arg(long, default_value_t = 1.0)]
         depth: f32,
 
@@ -47,6 +48,7 @@ enum Command {
         #[arg(long)]
         data: PathBuf,
 
+        /// Print verbose info.
         #[arg(short, long)]
         verbose: bool,
     },
