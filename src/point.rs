@@ -1,29 +1,10 @@
+use hribovje::Point;
 use proj::{Proj, ProjError};
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct Point {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
-}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LatLon {
     pub lat: f32,
     pub lon: f32,
-}
-
-impl Point {
-    pub fn distance_sq(&self, other: &Point) -> f32 {
-        let dx = self.x - other.x;
-        let dy = self.y - other.y;
-
-        dx * dx + dy * dy
-    }
-
-    pub fn distance(&self, other: &Point) -> f32 {
-        self.distance_sq(other).sqrt()
-    }
 }
 
 impl LatLon {

@@ -1,4 +1,6 @@
-use crate::{Area, Point, qtree::QTree};
+use hribovje::{Point, qtree::QuadTree};
+
+use crate::Area;
 
 const MAX_DISTANCE: f32 = 26_000.0; // 26km
 const JUMP_DISTANCE: f32 = 6.0; // 6m
@@ -38,7 +40,7 @@ pub fn query(
 
     // Construct the tree only with points that have correct height..
     let area = Area::from_points(&filtered_points);
-    let mut tree = QTree::new(area);
+    let mut tree = QuadTree::new(area);
     let mut count = 0;
     for p in filtered_points {
         if p.z < height + depth {
@@ -71,7 +73,7 @@ pub fn query(
             radius: JUMP_DISTANCE,
         };
 
-        let nr_neigh = tree.query(&area, &mut buffer)?;
+        let nr_neigh = tree.query_remove(&area, &mut buffer)?;
         for neigh in &buffer[..nr_neigh] {
             results.push(neigh.clone())
         }

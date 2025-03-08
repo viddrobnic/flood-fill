@@ -1,14 +1,12 @@
-pub mod data;
 pub mod query;
 pub mod visualize;
 
-mod area;
 mod point;
-mod qtree;
 
 use std::ops::Sub;
 
-pub use area::*;
+use hribovje::Area;
+
 pub use point::*;
 
 #[derive(Debug)]

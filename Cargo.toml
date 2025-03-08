@@ -9,3 +9,4 @@ askama = "0.12.1"
 clap = { version = "4.5.31", features = ["derive"] }
 image = "0.25.5"
 proj = "0.28.0"
+hribovje = { git = "https://github.com/viddrobnic/hribovje.git" }

@@ -1,9 +1,10 @@
 use std::{fs, io::Write, path::Path};
 
 use askama::Template;
+use hribovje::Point;
 use image::{Rgba, RgbaImage};
 
-use crate::{Area, Bounds, LatLon, Point};
+use crate::{Area, Bounds, LatLon};
 
 const IMG_SCALE: u32 = 10;
 

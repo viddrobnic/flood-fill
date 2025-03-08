@@ -1,13 +1,15 @@
 use std::{
     fmt::Debug,
+    fs, io,
     path::{Path, PathBuf},
 };
 
 use clap::{Parser, Subcommand};
 use flood_fill::{
-    LatLon, Point, data, query,
+    LatLon, query,
     visualize::{render_html, visualize},
 };
+use hribovje::{Point, data};
 
 const IMAGE_OUTPUT: &str = "flood.png";
 const HTML_OUTPUT: &str = "flood.html";
@@ -57,7 +59,13 @@ enum Command {
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     match cli.command {
-        Command::Import { input, output } => data::import(input, output),
+        Command::Import { input, output } => {
+            let out_file = fs::File::create(output)?;
+            let writer = io::BufWriter::new(out_file);
+
+            data::import_data(input, writer)?;
+            Ok(())
+        }
         Command::Simulate {
             lat,
             lon,
@@ -77,7 +85,10 @@ fn simulate<P: AsRef<Path> + Debug>(
     depth: f32,
     verbose: bool,
 ) -> anyhow::Result<()> {
-    let points = data::read(data)?;
+    let in_file = fs::File::open(data)?;
+    let reader = io::BufReader::new(in_file);
+
+    let points = data::read_points(reader)?;
     if verbose {
         println!("[INFO] Read data, #points: {}", points.len());
     }
